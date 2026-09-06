@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webix Lab — Web & App Development</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A10;
+    --panel:#14141D;
+    --panel-2:#1B1B26;
+    --line:#2A2A38;
+    --text:#F3F3F7;
+    --text-dim:#9A9AAE;
+    --lime:#D4FF3F;
+    --purple:#8B5CF6;
+    --orange:#FF6B3D;
+    --blue:#3DB8FF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Poppins',sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .brush{font-family:'Permanent Marker',cursive;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;position:relative;z-index:2;}
+
+  /* ---- background blobs ---- */
+  .blob{position:absolute;filter:blur(0px);z-index:0;pointer-events:none;}
+
+  /* ---------- NAV ---------- */
+  header{position:sticky;top:0;z-index:50;background:rgba(10,10,16,0.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;}
+  .logo{font-family:'Permanent Marker',cursive;font-size:1.3rem;letter-spacing:0.01em;}
+  nav ul{display:flex;gap:30px;list-style:none;}
+  nav a{color:var(--text-dim);font-size:0.94rem;font-weight:500;transition:color .15s;}
+  nav a:hover, nav a.active{color:var(--lime);}
+  .menu-btn{
+    width:42px;height:42px;border-radius:50%;background:var(--purple);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;cursor:pointer;
+  }
+  .menu-btn span{width:16px;height:2px;background:#fff;border-radius:2px;}
+  @media (max-width:820px){ nav ul{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;padding:70px 0 60px;overflow:hidden;}
+  .hero-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:40px;align-items:center;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;color:var(--text-dim);
+    font-size:0.95rem;margin-bottom:6px;
+  }
+  .eyebrow .arrow{font-family:'Permanent Marker',cursive;color:var(--lime);}
+  h1.hero-title{
+    font-family:'Permanent Marker',cursive;
+    font-size:4.6rem;line-height:0.95;letter-spacing:0.01em;
+    color:#fff;margin:6px 0 18px;
+    text-shadow:3px 3px 0 rgba(139,92,246,0.35);
+  }
+  .underline-svg{display:block;margin:-8px 0 20px;}
+  .role-line{font-size:1.05rem;color:var(--text-dim);margin-bottom:28px;}
+  .role-line b{color:var(--text);font-weight:600;}
+  .hero-actions{display:flex;gap:16px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:14px 24px;border-radius:40px;
+    font-weight:600;font-size:0.95rem;cursor:pointer;border:2px solid transparent;transition:transform .12s;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-lime{background:var(--lime);color:#0A0A10;}
+  .btn-outline{border-color:var(--line);color:var(--text);}
+  .btn-outline:hover{border-color:var(--lime);}
+  .scroll-hint{margin-top:44px;display:flex;align-items:center;gap:10px;color:var(--text-dim);font-size:0.85rem;}
+  .scroll-hint .mouse{width:18px;height:28px;border:2px solid var(--text-dim);border-radius:10px;position:relative;}
+  .scroll-hint .mouse::after{content:"";position:absolute;top:5px;left:50%;transform:translateX(-50%);width:3px;height:6px;background:var(--text-dim);border-radius:2px;}
+
+  /* hero visual: code panel + doodles */
+  .hero-visual{position:relative;display:flex;align-items:center;justify-content:center;}
+  .code-card{
+    width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 30px 70px -20px rgba(139,92,246,0.35);transform:rotate(-2deg);overflow:hidden;
+  }
+  .code-bar{display:flex;align-items:center;gap:7px;padding:12px 16px;background:var(--panel-2);border-bottom:1px solid var(--line);}
+  .code-bar span{width:10px;height:10px;border-radius:50%;background:#3A3A4A;}
+  .code-bar span:nth-child(1){background:var(--orange);}
+  .code-bar span:nth-child(2){background:var(--lime);}
+  .code-bar span:nth-child(3){background:var(--blue);}
+  .code-body{padding:18px 20px;font-family:monospace;font-size:0.82rem;line-height:1.9;color:var(--text-dim);}
+  .code-body .k{color:var(--purple);}
+  .code-body .s{color:var(--lime);}
+  .code-body .f{color:var(--blue);}
+  .badge-float{
+    position:absolute;background:var(--blue);color:#0A0A10;font-weight:700;font-size:0.85rem;
+    padding:12px 18px;border-radius:20px;box-shadow:0 10px 24px rgba(61,184,255,0.4);
+  }
+  .badge-float.b1{top:-6%;right:6%;transform:rotate(6deg);}
+  .badge-float.b2{bottom:2%;left:-8%;background:var(--orange);box-shadow:0 10px 24px rgba(255,107,61,0.4);transform:rotate(-5deg);}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:80px 0;position:relative;}
+  .section-tag{
+    display:inline-flex;align-items:center;gap:10px;font-family:'Permanent Marker',cursive;
+    font-size:1.5rem;color:#fff;margin-bottom:36px;
+  }
+  .section-tag .star{color:var(--lime);}
+
+  /* ---------- PREVIEW / SAMPLE PANEL ---------- */
+  .preview-panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:20px;
+    padding:26px;display:grid;grid-template-columns:0.9fr 1.4fr;gap:26px;align-items:center;
+  }
+  .preview-panel h3{font-size:1.3rem;margin-bottom:10px;}
+  .preview-panel p{color:var(--text-dim);font-size:0.95rem;margin-bottom:18px;}
+  .preview-link{color:var(--lime);font-weight:600;display:inline-flex;align-items:center;gap:6px;}
+  .browser-mock{background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .browser-top{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--line);}
+  .browser-top span{width:9px;height:9px;border-radius:50%;background:#3A3A4A;}
+  .browser-url{margin-left:6px;background:var(--panel);border-radius:6px;padding:4px 12px;font-family:monospace;font-size:0.72rem;color:var(--text-dim);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .browser-content{
+    height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+    background:linear-gradient(135deg, rgba(139,92,246,0.18), rgba(61,184,255,0.12));
+  }
+  .play-btn{
+    width:64px;height:64px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;
+    font-size:1.4rem;color:#0A0A10;box-shadow:0 12px 30px rgba(212,255,63,0.4);
+  }
+  .browser-content h4{font-size:1rem;color:var(--text);}
+  .browser-content p{color:var(--text-dim);font-size:0.82rem;}
+
+  /* ---------- PROJECTS ---------- */
+  .project-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .project-card{
+    border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--panel);
+    display:flex;flex-direction:column;transition:transform .15s ease;
+  }
+  .project-card:hover{transform:translateY(-4px);}
+  .thumb{height:150px;position:relative;display:flex;align-items:flex-end;padding:14px;}
+  .thumb .corner-link{
+    position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;
+    background:rgba(10,10,16,0.55);display:flex;align-items:center;justify-content:center;font-size:0.9rem;
+  }
+  .thumb-1{background:linear-gradient(135deg,#FFD84D,#FF6B3D);}
+  .thumb-2{background:linear-gradient(135deg,#8B5CF6,#3DB8FF);}
+  .thumb-3{background:linear-gradient(135deg,#3DB8FF,#0A0A10);}
+  .thumb-4{background:linear-gradient(135deg,#3DDC97,#0A0A10);}
+  .thumb span.emoji{font-size:2.2rem;}
+  .project-info{padding:14px 16px 18px;}
+  .project-info h4{font-size:0.98rem;margin-bottom:4px;}
+  .project-info p{color:var(--text-dim);font-size:0.8rem;}
+  .view-all{display:flex;justify-content:flex-end;margin-bottom:20px;}
+  .view-all a{color:var(--lime);font-weight:600;font-size:0.92rem;display:inline-flex;gap:6px;align-items:center;}
+
+  /* ---------- SKILLS ---------- */
+  .skills-row{display:flex;flex-wrap:wrap;gap:20px;}
+  .skill-badge{
+    display:flex;flex-direction:column;align-items:center;gap:10px;width:110px;
+  }
+  .skill-icon{
+    width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:1rem;color:#fff;
+  }
+  .skill-badge span.label{font-size:0.82rem;color:var(--text-dim);text-align:center;}
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid;grid-template-columns:0.85fr 1.15fr;gap:0;border-radius:20px;overflow:hidden;}
+  .about-visual{
+    background:var(--lime);padding:40px;display:flex;flex-direction:column;justify-content:center;gap:6px;
+    font-family:'Permanent Marker',cursive;color:#0A0A10;font-size:1.9rem;line-height:1.2;
+  }
+  .about-text{background:var(--panel);padding:40px;display:flex;flex-direction:column;justify-content:center;}
+  .about-text h3{font-family:'Permanent Marker',cursive;font-size:1.6rem;margin-bottom:14px;color:#fff;}
+  .about-text p{color:var(--text-dim);font-size:0.98rem;margin-bottom:18px;}
+  .about-text a{color:var(--lime);font-weight:600;display:inline-flex;align-items:center;gap:6px;}
+
+  /* ---------- POLICY ---------- */
+  .policy-panel{
+    background:var(--panel-2);border:2px dashed var(--orange);border-radius:20px;padding:38px;
+  }
+  .policy-panel h3{font-family:'Permanent Marker',cursive;font-size:1.6rem;margin-bottom:18px;color:#fff;}
+  .policy-list{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .policy-item{
+    display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:16px;
+  }
+  .policy-item .num{
+    font-family:'Permanent Marker',cursive;color:var(--orange);font-size:1.1rem;flex-shrink:0;
+  }
+  .policy-item p{color:var(--text-dim);font-size:0.9rem;}
+  .policy-item p b{color:var(--text);}
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  .contact-cta{
+    display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;
+    padding:40px 0 20px;
+  }
+  .contact-cta h2{font-family:'Permanent Marker',cursive;font-size:2.4rem;color:#fff;}
+  .contact-cta h2 .circle{
+    display:inline-block;border:3px solid var(--purple);border-radius:50%;
+    padding:2px 18px;color:var(--purple);transform:rotate(-4deg);
+  }
+  .contact-meta{display:flex;gap:28px;flex-wrap:wrap;color:var(--text-dim);font-size:0.92rem;}
+  .contact-meta a{color:var(--text);}
+  footer{border-top:1px solid var(--line);padding:22px 0;display:flex;justify-content:space-between;align-items:center;color:var(--text-dim);font-size:0.85rem;flex-wrap:wrap;gap:12px;}
+  .socials{display:flex;gap:12px;}
+  .socials a{
+    width:36px;height:36px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:0.85rem;
+  }
+  .socials a:hover{border-color:var(--lime);color:var(--lime);}
+
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    h1.hero-title{font-size:3rem;}
+    .preview-panel{grid-template-columns:1fr;}
+    .project-grid{grid-template-columns:1fr 1fr;}
+    .about-grid{grid-template-columns:1fr;}
+    .policy-list{grid-template-columns:1fr;}
+    .skills-row{justify-content:center;}
+  }
+</style>
+</head>
+<body>
+
+<!-- background blobs -->
+<svg class="blob" style="top:-60px;left:-80px;" width="320" height="320" viewBox="0 0 320 320">
+  <path d="M40 90 C 10 150, 60 230, 140 250 C 220 270, 300 220, 300 140 C 300 60, 230 10, 150 20 C 90 28, 70 40, 40 90Z" fill="#8B5CF6" opacity="0.28"/>
+</svg>
+<svg class="blob" style="top:0;right:-100px;" width="280" height="280" viewBox="0 0 280 280">
+  <path d="M50 60 C 10 110, 30 200, 110 230 C 190 260, 260 200, 250 120 C 242 55, 170 10, 110 20 C 80 25, 70 30, 50 60Z" fill="#3DB8FF" opacity="0.22"/>
+</svg>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="logo">WEBIX LAB.</div>
+      <ul>
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="menu-btn"><span></span><span></span><span></span></div>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="arrow brush">Hey,</span> I build things for the web</div>
+      <h1 class="hero-title">WEBIX<br>LAB.</h1>
+      <svg class="underline-svg" width="260" height="18" viewBox="0 0 260 18">
+        <path d="M2 12 C 60 2, 200 2, 258 10" stroke="#D4FF3F" stroke-width="6" fill="none" stroke-linecap="round"/>
+      </svg>
+      <p class="role-line"><b>Web Developer</b> · <b>App Builder</b> · <b>UI Engineer</b> — working across Webix, JavaScript and Python to ship interfaces that actually hold up in production.</p>
+      <div class="hero-actions">
+        <a href="https://exam-go.github.io/Exam-Go/" target="_blank" rel="noopener" class="btn btn-lime">▶ Open Live Sample</a>
+      </div>
+      <div class="scroll-hint"><div class="mouse"></div> Scroll down</div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="badge-float b1">100% Custom Builds</div>
+      <div class="code-card">
+        <div class="code-bar"><span></span><span></span><span></span></div>
+        <div class="code-body">
+          <div><span class="k">const</span> app = <span class="f">webix</span>.ui({</div>
+          <div>&nbsp;&nbsp;view: <span class="s">"datatable"</span>,</div>
+          <div>&nbsp;&nbsp;url: <span class="s">"/api/records"</span>,</div>
+          <div>&nbsp;&nbsp;editable: <span class="k">true</span></div>
+          <div>});</div>
+          <div>app.<span class="f">render</span>();</div>
+        </div>
+      </div>
+      <div class="badge-float b2">Ready to Ship 🚀</div>
+    </div>
+  </div>
+</section>
+
+<section id="preview">
+  <div class="wrap">
+    <div class="section-tag"><span class="star">★</span> Live Sample</div>
+    <div class="preview-panel">
+      <div>
+        <h3>Exam-Go</h3>
+        <p>A working online-exam interface built with Webix — question navigation, timed sections, and a results screen, fully deployed and clickable right now.</p>
+        <a class="preview-link" href="https://exam-go.github.io/Exam-Go/" target="_blank" rel="noopener">Open exam-go.github.io/Exam-Go ↗</a>
+      </div>
+      <div class="browser-mock">
+        <div class="browser-top">
+          <span></span><span></span><span></span>
+          <div class="browser-url">exam-go.github.io/Exam-Go/</div>
+        </div>
+        <a href="https://exam-go.github.io/Exam-Go/" target="_blank" rel="noopener">
+          <div class="browser-content">
+            <div class="play-btn">▶</div>
+            <h4>Watch it live</h4>
+            <p>Click through to the deployed build</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="section-tag"><span class="star">★</span> Skills</div>
+    <div class="skills-row">
+      <div class="skill-badge"><div class="skill-icon" style="background:#FF6B3D;">&lt;/&gt;</div><span class="label">HTML</span></div>
+      <div class="skill-badge"><div class="skill-icon" style="background:#3DB8FF;">{ }</div><span class="label">CSS</span></div>
+      <div class="skill-badge"><div class="skill-icon" style="background:#F7DF1E;color:#0A0A10;">JS</div><span class="label">JavaScript</span></div>
+      <div class="skill-badge"><div class="skill-icon" style="background:#3776AB;">Py</div><span class="label">Python</span></div>
+      <div class="skill-badge"><div class="skill-icon" style="background:#8B5CF6;">Cv</div><span class="label">Canva</span></div>
+      <div class="skill-badge"><div class="skill-icon" style="background:#FF3D3D;">Ai</div><span class="label">Adobe Suite</span></div>
+      <div class="skill-badge"><div class="skill-icon" style="background:#3DDC97;color:#0A0A10;">Nd</div><span class="label">Node.js</span></div>
+      <div class="skill-badge"><div class="skill-icon" style="background:#3DB8FF;">&gt;_</div><span class="label">VS Code</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="policy">
+  <div class="wrap">
+    <div class="section-tag"><span class="star">★</span> Working Together</div>
+    <div class="policy-panel">
+      <h3>A few ground rules</h3>
+      <div class="policy-list">
+        <div class="policy-item"><span class="num">01</span><p><b>Payment is required in advance</b> for all website and application builds before work begins.</p></div>
+        <div class="policy-item"><span class="num">02</span><p>Scope and timeline are agreed in writing before the invoice goes out.</p></div>
+        <div class="policy-item"><span class="num">03</span><p>Revisions within the agreed scope are included; work outside scope is quoted separately.</p></div>
+        <div class="policy-item"><span class="num">04</span><p>Source files and access are handed over once the final payment is settled.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="padding-bottom:0;">
+  <div class="wrap">
+    <div class="contact-cta">
+      <h2>LET'S BUILD SOMETHING <span class="circle brush">DOPE</span></h2>
+      <div class="contact-meta">
+        <span>✉️ <a href="mailto:webix.lab07@gmail.com">webix.lab07@gmail.com</a></span>
+        <span>📞 <a href="tel:+918700712186">+91 87007 12186</a></span>
+        <span>📍 Remote / Worldwide</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:12px;">
+    <span>Webix Lab © 2026</span>
+    <div class="socials">
+      <a href="#" aria-label="GitHub">Gh</a>
+      <a href="#" aria-label="LinkedIn">In</a>
+      <a href="#" aria-label="Twitter">Tw</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
+
